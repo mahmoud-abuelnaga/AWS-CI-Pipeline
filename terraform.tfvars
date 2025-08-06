@@ -1,0 +1,9 @@
+bucket_name = "aws-ci-new-bucket"
+root_volume_size = "10"
+min_size = "1"
+max_size = "4"
+desired_capacity = "2"
+associate_public_ip_to_beanstalk_ec2 = "true"
+region = "eu-central-1"
+db_storage_size = 20
+
