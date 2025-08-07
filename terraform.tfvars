@@ -6,4 +6,4 @@ desired_capacity = "2"
 associate_public_ip_to_beanstalk_ec2 = "true"
 region = "eu-central-1"
 db_storage_size = 20
-
+source_code_url = "https://github.com/mahmoud-abuelnaga/AWS-CI-Pipeline"

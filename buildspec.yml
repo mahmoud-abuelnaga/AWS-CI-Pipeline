@@ -2,9 +2,9 @@ version: 0.2
 
 env:
   parameter-store:
-    database_username: "/aws-ci/database/username"
-    database_password: "/aws-ci/database/password"
-    database_url: "/aws-ci/database/url"
+    database_username: "/ci/database/username"
+    database_password: "/ci/database/password"
+    database_url: "/ci/database/url"
 
 phases:
   install:

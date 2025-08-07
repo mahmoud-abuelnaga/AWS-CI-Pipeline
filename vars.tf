@@ -51,3 +51,8 @@ variable "db_password" {
   type = string
   description = "The password for the database"
 }
+
+variable "source_code_url" {
+  type = string
+  description = "The url of the source code"
+}
