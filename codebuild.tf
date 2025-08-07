@@ -25,7 +25,7 @@ data "aws_iam_policy_document" "codebuild_policy_document" {
       "ssm:GetParametersByPath"
     ]
 
-    resources = ["arn:aws:ssm:${var.region}:886436923743:parameter/aws-ci/*"]
+    resources = ["arn:aws:ssm:${var.region}:886436923743:parameter/ci/*"]
   }
 
   statement {
