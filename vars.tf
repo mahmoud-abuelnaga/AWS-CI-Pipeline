@@ -62,6 +62,11 @@ variable "github_connections" {
   description = "The list of arn of the github connections"
 }
 
+variable "github_connections_for_policies" {
+  type = list(string)
+  description = "The list of arn of the github connections for policies"
+}
+
 variable "github_repo" {
   type = string
   description = "The name of the github repository: username/repo-name"

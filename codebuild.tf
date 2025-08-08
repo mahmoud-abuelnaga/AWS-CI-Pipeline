@@ -96,7 +96,7 @@ data "aws_iam_policy_document" "codebuild_policy_document" {
       "codeconnections:UseConnection"
     ]
 
-    resources = [var.github_connections["codestar-connection"], var.github_connections["codeconnection"]]
+    resources = var.github_connections_for_policies
   }
 }
 

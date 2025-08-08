@@ -69,7 +69,7 @@ data "aws_iam_policy_document" "codepipeline_privileges_policy_document" {
       "codestar-connections:UseConnection"
     ]
 
-    resources = [var.github_connections["codestar-connection"], var.github_connections["codeconnection"]]
+    resources = var.github_connections_for_policies
   }
 
 }
