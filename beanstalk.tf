@@ -109,7 +109,7 @@ resource "aws_iam_instance_profile" "beanstalk_ec2_instance_profile" {
 resource "aws_elastic_beanstalk_environment" "beanstalk_env" {
   name         = "aws-ci-beanstalk-env"
   application  = aws_elastic_beanstalk_application.beanstalk_app.name
-  platform_arn = "arn:aws:elasticbeanstalk:eu-central-1::platform/Corretto 21 running on 64bit Amazon Linux 2023/4.6.3"
+  platform_arn = "arn:aws:elasticbeanstalk:eu-central-1::platform/Tomcat 11 with Corretto 21 running on 64bit Amazon Linux 2023/5.7.3"
   tier         = "WebServer"
 
   setting {
