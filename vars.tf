@@ -56,3 +56,25 @@ variable "source_code_url" {
   type = string
   description = "The url of the source code"
 }
+
+variable "github_connections" {
+  type = map(string)
+  description = "The list of arn of the github connections"
+}
+
+variable "github_repo" {
+  type = string
+  description = "The name of the github repository: username/repo-name"
+}
+
+variable "github_branch" {
+  type = string
+  description = "The name of the github branch"
+  default = "main"
+}
+
+variable "codepipeline_name" {
+  type = string
+  description = "The name of the codepipeline"
+  default = "aws-ci-codepipeline"
+}

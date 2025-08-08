@@ -96,10 +96,7 @@ data "aws_iam_policy_document" "codebuild_policy_document" {
       "codeconnections:UseConnection"
     ]
 
-    resources = [
-      "arn:aws:codestar-connections:us-east-1:886436923743:connection/bf84a9fd-84cb-4621-9b4c-7b462cfd71ae",
-      "arn:aws:codeconnections:us-east-1:886436923743:connection/bf84a9fd-84cb-4621-9b4c-7b462cfd71ae"
-    ]
+    resources = [var.github_connections["codestar-connection"], var.github_connections["codeconnection"]]
   }
 }
 
