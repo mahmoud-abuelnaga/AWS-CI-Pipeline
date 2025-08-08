@@ -57,63 +57,63 @@ resource "aws_iam_instance_profile" "beanstalk_ec2_instance_profile" {
   role = aws_iam_role.beanstalk_ec2_role.name
 }
 
-# Load balancer Security group
-resource "aws_security_group" "beanstalk_lb_sg" {
-  name        = "aws-ci-beanstalk-lb-sg"
-  description = "Security group for beanstalk load balancer"
-  vpc_id      = data.aws_vpc.default_vpc.id
+# # Load balancer Security group
+# resource "aws_security_group" "beanstalk_lb_sg" {
+#   name        = "aws-ci-beanstalk-lb-sg"
+#   description = "Security group for beanstalk load balancer"
+#   vpc_id      = data.aws_vpc.default_vpc.id
 
-  egress {
-    description = "Allow all outbound traffic"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+#   egress {
+#     description = "Allow all outbound traffic"
+#     from_port   = 0
+#     to_port     = 0
+#     protocol    = "-1"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
 
-  ingress {
-    description = "Allow inbound traffic on port 80 from beanstalk ec2"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
+#   ingress {
+#     description = "Allow inbound traffic on port 80 from beanstalk ec2"
+#     from_port   = 80
+#     to_port     = 80
+#     protocol    = "tcp"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
+# }
 
-# EC2 Security group
-resource "aws_security_group" "beanstalk_ec2_sg" {
-  name        = "aws-ci-beanstalk-ec2-sg"
-  description = "Security group for beanstalk ec2"
-  vpc_id      = data.aws_vpc.default_vpc.id
+# # EC2 Security group
+# resource "aws_security_group" "beanstalk_ec2_sg" {
+#   name        = "aws-ci-beanstalk-ec2-sg"
+#   description = "Security group for beanstalk ec2"
+#   vpc_id      = data.aws_vpc.default_vpc.id
 
-  egress {
-    description = "Allow all outbound traffic"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+#   egress {
+#     description = "Allow all outbound traffic"
+#     from_port   = 0
+#     to_port     = 0
+#     protocol    = "-1"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
 
-  ingress {
-    description = "Allow inbound traffic on port 80 from beanstalk load balancer"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    security_groups = [
-      aws_security_group.beanstalk_lb_sg.id
-    ]
+#   ingress {
+#     description = "Allow inbound traffic on port 80 from beanstalk load balancer"
+#     from_port   = 80
+#     to_port     = 80
+#     protocol    = "tcp"
+#     security_groups = [
+#       aws_security_group.beanstalk_lb_sg.id
+#     ]
 
-  }
-}
+#   }
+# }
 
 resource "aws_elastic_beanstalk_environment" "beanstalk_env" {
-  name                = "aws-ci-beanstalk-env"
-  application         = aws_elastic_beanstalk_application.beanstalk_app.name
-  solution_stack_name = "64bit Amazon Linux 2023 v5.7.2 running Tomcat 11 Corretto 21"
-  tier                = "WebServer"
+  name         = "aws-ci-beanstalk-env"
+  application  = aws_elastic_beanstalk_application.beanstalk_app.name
+  platform_arn = "arn:aws:elasticbeanstalk:eu-central-1::platform/Corretto 21 running on 64bit Amazon Linux 2023/4.6.3"
+  tier         = "WebServer"
 
   setting {
-    namespace = "aws:autoScaling:launchconfiguration"
+    namespace = "aws:autoscaling:launchconfiguration"
     name      = "InstanceType"
     value     = "t2.micro"
   }
@@ -157,47 +157,53 @@ resource "aws_elastic_beanstalk_environment" "beanstalk_env" {
   }
 
   setting {
-    namespace = "aws:elbv2:loadbalancer"
-    name      = "Scheme"
-    value     = "internet-facing"
+    namespace = "aws:elasticbeanstalk:environment"
+    name      = "LoadBalancerType"
+    value     = "application"
   }
 
   setting {
-    namespace = "aws:elbv2:loadbalancer"
-    name      = "Subnets"
+    namespace = "aws:ec2:vpc"
+    name      = "ELBScheme"
+    value     = "public"
+  }
+
+
+  setting {
+    namespace = "aws:ec2:vpc"
+    name      = "ELBSubnets"
     value     = join(",", data.aws_subnets.default_subnets.ids)
   }
 
-  setting {
-    namespace = "aws:elbv2:loadbalancer"
-    name      = "SecurityGroups"
-    value     = aws_security_group.beanstalk_lb_sg.id
-  }
+  # setting {
+  #   namespace = "aws:elbv2:loadbalancer"
+  #   name      = "SecurityGroups"
+  #   value     = aws_security_group.beanstalk_lb_sg.id
+  # }
 
   # Enable Stickiness for ALB Target Group
   setting {
-    namespace = "aws:elbv2:loadbalancer"
-    name      = "TargetGroupStickinessEnabled"
+    namespace = "aws:elasticbeanstalk:environment:process:default"
+    name      = "StickinessEnabled"
     value     = "true"
   }
 
   setting {
-    namespace = "aws:elbv2:loadbalancer"
-    name      = "TargetGroupStickinessType"
+    namespace = "aws:elasticbeanstalk:environment:process:default"
+    name      = "StickinessType"
     value     = "lb_cookie"
   }
 
   setting {
-    namespace = "aws:elbv2:loadbalancer"
-    name      = "TargetGroupStickinessDuration"
+    namespace = "aws:elasticbeanstalk:environment:process:default"
+    name      = "StickinessLBCookieDuration"
     value     = "3600"
   }
-
 
   setting {
     namespace = "aws:autoscaling:launchconfiguration"
     name      = "RootVolumeSize"
-    value     = var.root_volume_size
+    value     = tostring(var.root_volume_size)
   }
 
   setting {
@@ -206,23 +212,29 @@ resource "aws_elastic_beanstalk_environment" "beanstalk_env" {
     value     = "gp3"
   }
 
-  setting {
-    namespace = "aws:autoscaling:launchconfiguration"
-    name      = "SecurityGroups"
-    value     = aws_security_group.beanstalk_ec2_sg.id
-  }
+  # setting {
+  #   namespace = "aws:autoscaling:launchconfiguration"
+  #   name      = "SecurityGroups"
+  #   value     = aws_security_group.beanstalk_ec2_sg.id
+  # }
+
+  # setting {
+  #   namespace = "aws:autoscaling:launchconfiguration"
+  #   name      = "DisableDefaultEC2SecurityGroup"
+  #   value     = "true"
+  # }
 
   # Auto Scaling Group Configuration
   setting {
     namespace = "aws:autoscaling:asg"
     name      = "MinSize"
-    value     = var.min_size
+    value     = tostring(var.min_size)
   }
 
   setting {
     namespace = "aws:autoscaling:asg"
     name      = "MaxSize"
-    value     = var.max_size
+    value     = tostring(var.max_size)
   }
 
   # Deployment policy
@@ -277,7 +289,28 @@ resource "aws_elastic_beanstalk_environment" "beanstalk_env" {
   }
 }
 
+data "aws_security_group" "beanstalk_ec2_sg" {
+  depends_on = [aws_elastic_beanstalk_environment.beanstalk_env]
+
+  filter {
+    name   = "tag:elasticbeanstalk:environment-id"
+    values = [aws_elastic_beanstalk_environment.beanstalk_env.id]
+  }
+
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default_vpc.id]
+  }
+
+  filter {
+    name   = "group-name"
+    values = ["*AWSEBSecurityGroup*"]
+  }
+}
+
 resource "aws_autoscaling_policy" "cpu_target_tracking" {
+  depends_on = [aws_elastic_beanstalk_environment.beanstalk_env]
+
   name                   = "cpu-target-tracking"
   autoscaling_group_name = aws_elastic_beanstalk_environment.beanstalk_env.autoscaling_groups[0]
   policy_type            = "TargetTrackingScaling"

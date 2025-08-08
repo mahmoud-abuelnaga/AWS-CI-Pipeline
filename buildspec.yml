@@ -22,7 +22,11 @@ phases:
       - cd project
       - mvn install
       - cd ..
+      - mv project/target/*.war project/target/ROOT.war
 
 artifacts:
+  base-directory: project/target
   files:
-     - 'project/target/*.war'
+     - '*.war'
+  discard-paths: yes
+  name: application.zip

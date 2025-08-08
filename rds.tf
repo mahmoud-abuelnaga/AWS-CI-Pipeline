@@ -11,13 +11,24 @@ resource "aws_security_group" "rds_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # ingress {
+  #   description = "Allow inbound traffic on port 3306 from beanstalk ec2"
+  #   from_port   = 3306
+  #   to_port     = 3306
+  #   protocol    = "tcp"
+  #   security_groups = [
+  #     aws_security_group.beanstalk_ec2_sg.id
+  #   ]
+
+  # }
+
   ingress {
     description = "Allow inbound traffic on port 3306 from beanstalk ec2"
     from_port   = 3306
     to_port     = 3306
     protocol    = "tcp"
     security_groups = [
-      aws_security_group.beanstalk_ec2_sg.id
+      data.aws_security_group.beanstalk_ec2_sg.id
     ]
 
   }
@@ -36,7 +47,7 @@ resource "aws_db_instance" "rds_instance" {
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
   skip_final_snapshot    = true
 }
-  
+
 output "rds_endpoint" {
   value = aws_db_instance.rds_instance.endpoint
 }
