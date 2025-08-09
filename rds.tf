@@ -52,7 +52,3 @@ resource "null_resource" "rds_initialization" {
     command = "bash -c 'source ${path.module}/bash-scripts/aws/functions/rds.sh && intialize_database ${aws_db_instance.rds_instance.identifier} ${aws_db_instance.rds_instance.username} ${aws_db_instance.rds_instance.password} ${path.module}/utilities/db_backup.sql \"\" mysql'"
   }
 }
-
-output "rds_endpoint" {
-  value = aws_db_instance.rds_instance.endpoint
-}

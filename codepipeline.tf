@@ -115,6 +115,7 @@ resource "aws_codepipeline" "codepipeline" {
         ConnectionArn    = var.github_connections["codeconnection"]
         FullRepositoryId = var.github_repo
         BranchName       = var.github_branch
+        OutputArtifactFormat = "CODEBUILD_CLONE_REF"
       }
     }
   }
