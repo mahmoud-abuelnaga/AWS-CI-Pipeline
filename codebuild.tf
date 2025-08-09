@@ -101,41 +101,44 @@ data "aws_iam_policy_document" "codebuild_policy_document" {
 }
 
 resource "aws_iam_role_policy" "codebuild_policy" {
-  role = aws_iam_role.codebuild_role.name
+  role   = aws_iam_role.codebuild_role.name
   policy = data.aws_iam_policy_document.codebuild_policy_document.json
 }
 
 resource "aws_codebuild_project" "codebuild_project" {
-  name = "aws-ci-codebuild"
-  description = "Codebuild project for aws-ci"
+  name          = "aws-ci-codebuild"
+  description   = "Codebuild project for aws-ci"
   build_timeout = 10
-  service_role = aws_iam_role.codebuild_role.arn
+  service_role  = aws_iam_role.codebuild_role.arn
 
   source {
-    type = "GITHUB"
-    location = "${var.source_code_url}"
-    git_clone_depth = 1
+    type     = "GITHUB"
+    location = var.source_code_url
+    git_submodules_config {
+      fetch_submodules = true
+    }
+    
     buildspec = "buildspec.yml"
   }
 
   source_version = "main"
 
   artifacts {
-    type = "S3"
-    location = "${var.bucket_name}"
-    path = "builds/"
+    type     = "S3"
+    location = var.bucket_name
+    path     = "builds/"
   }
 
   environment {
-    compute_type = "BUILD_GENERAL1_SMALL"
-    image = "aws/codebuild/standard:7.0"
-    type = "LINUX_CONTAINER"
+    compute_type                = "BUILD_GENERAL1_SMALL"
+    image                       = "aws/codebuild/standard:7.0"
+    type                        = "LINUX_CONTAINER"
     image_pull_credentials_type = "CODEBUILD"
   }
 
   logs_config {
     cloudwatch_logs {
-      group_name = "/aws-ci/codebuild"
+      group_name  = "/aws-ci/codebuild"
       stream_name = "aws-ci-codebuild"
     }
   }

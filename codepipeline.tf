@@ -90,6 +90,8 @@ resource "aws_iam_role_policy_attachment" "beanstalk_admin" {
 }
 
 resource "aws_codepipeline" "codepipeline" {
+  depends_on = [aws_ssm_parameter.rds_endpoint, aws_ssm_parameter.rds_password, aws_ssm_parameter.rds_username]
+
   name     = var.codepipeline_name
   role_arn = aws_iam_role.codepipeline.arn
 
